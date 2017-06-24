@@ -1,0 +1,6 @@
+#!/bin/sh
+
+SCRIPT=`realpath -s $0`
+SCRIPTPATH=`dirname '$SCRIPT'`
+
+python $SCRIPTPATH/cve_searchsploit.py $@
