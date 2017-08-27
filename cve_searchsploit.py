@@ -25,7 +25,7 @@ def update_db():
         with open("exploitdb_mapping.json") as data_file:
             data = json.load(data_file)
 
-    files = open("/usr/share/exploitdb/files.csv")
+    files = open("files.csv")
     reader = csv.reader(files)
     reader.next() #skip header
 
@@ -60,10 +60,10 @@ def update_db():
             indexes = locations_of_substring(content, 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-')
             used = []
             for pos in indexes:
-		        cve = r.content[pos + 47: pos + 47 + 13]
-		        if cve in used: continue
-		        used.append(cve)
-		        print "Found: " + cve
+                  cve = r.content[pos + 47: pos + 47 + 13]
+                  if cve in used: continue
+                  used.append(cve)
+                  print "Found: " + cve
             data[edb] = used
             time.sleep(random.uniform(0.1, 0.3))
 
@@ -82,7 +82,7 @@ def update_db():
 
 
 def _search_cve_aux(cve):
-    files = open("/usr/share/exploitdb/files.csv")
+    files = open("files.csv")
     reader = csv.reader(files)
     reader.next() #skip header
     
