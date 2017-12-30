@@ -1,6 +1,15 @@
 # cve_searchsploit
 Search an exploit in the local exploitdb database by its CVE
 
+### Install
+```
+python setup.py install
+```
+#### Requirements
++ python2
++ requests
++ git
+
 ### Usage
 ```
 python cve_searchsploit.py [parameters...]

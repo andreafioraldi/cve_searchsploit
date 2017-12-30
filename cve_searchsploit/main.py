@@ -12,23 +12,32 @@ import requests
 import time
 import random
 import sys
+import progressbar
+
+pdir = os.path.dirname(os.path.abspath(__file__))
 
 cve_map = {}
 
 def update_db():
     data = {}
 
-    if not os.path.exists("exploitdb_mapping.json"):
-        with open("exploitdb_mapping.json", "w") as data_file:
+    if not os.path.exists(pdir + "/exploitdb_mapping.json"):
+        with open(pdir + "/exploitdb_mapping.json", "w") as data_file:
             json.dump(data, data_file)
     else:
-        with open("exploitdb_mapping.json") as data_file:
+        with open(pdir + "/exploitdb_mapping.json") as data_file:
             data = json.load(data_file)
 
-    files = open("files.csv")
+    print "Refreshing exploit-database repo with lastest exploits"
+    os.system("cd %s/exploit-database/; git pull" % pdir)
+    
+    files = open(pdir + "/exploit-database/files_exploits.csv")
     reader = csv.reader(files)
     reader.next() #skip header
 
+    reader = list(reader)
+    csv_len = len(reader)
+    
     get_header = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
 
     def locations_of_substring(string, substring):
@@ -41,33 +50,37 @@ def update_db():
                 return locations_found
         return recurse([], 0)
 
-    for row in reader:
-        edb = tuple(row)[0]
-        if edb in data:
-            print "Skipping edb id " + edb
-        else:
-            print "Downloading https://www.exploit-db.com/exploits/" + edb
-            content = ""
-            while True:
-                try:
-                    r = requests.get("https://www.exploit-db.com/exploits/" + edb, headers=get_header)
-                    content = r.content
-                except Exception:
-                    time.sleep(10)
-                    continue
-                finally:
-                    break
-            indexes = locations_of_substring(content, 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-')
-            used = []
-            for pos in indexes:
-                  cve = r.content[pos + 47: pos + 47 + 13]
-                  if cve in used: continue
-                  used.append(cve)
-                  print "Found: " + cve
-            data[edb] = used
-            time.sleep(random.uniform(0.1, 0.3))
+    print "Refreshing EDBID-CVE mapping"
+    with progressbar.ProgressBar(max_value=csv_len) as bar:
+        for i in xrange(csv_len):
+            edb = tuple(reader[i])[0]
+            if edb in data:
+                #print "Skipping edb id " + edb
+                pass
+            else:
+                #print "Downloading https://www.exploit-db.com/exploits/" + edb
+                content = ""
+                while True:
+                    try:
+                        r = requests.get("https://www.exploit-db.com/exploits/" + edb, headers=get_header)
+                        content = r.content
+                    except Exception:
+                        time.sleep(10)
+                        continue
+                    finally:
+                        break
+                indexes = locations_of_substring(content, 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-')
+                used = []
+                for pos in indexes:
+                      cve = r.content[pos + 47: pos + 47 + 13]
+                      if cve in used: continue
+                      used.append(cve)
+                      print "Found: edbid " + edb + " <---> " + cve
+                data[edb] = used
+                time.sleep(random.uniform(0.1, 0.3))
+            bar.update(i)
 
-    with open("exploitdb_mapping.json", "w") as data_file:
+    with open(pdir + "/exploitdb_mapping.json", "w") as data_file:
         json.dump(data, data_file, indent=2)
 
     cve_data = {}
@@ -76,13 +89,13 @@ def update_db():
             cve_data[e] = cve_data.get(e, [])
             cve_data[e].append(k)
 
-    with open("exploitdb_mapping_cve.json", "w") as data_file:
+    with open(pdir + "/exploitdb_mapping_cve.json", "w") as data_file:
         json.dump(cve_data, data_file, indent=2)
 
 
 
 def _search_cve_aux(cve):
-    files = open("files.csv")
+    files = open(pdir + "/exploit-database/files_exploits.csv")
     reader = csv.reader(files)
     reader.next() #skip header
     
@@ -92,7 +105,7 @@ def _search_cve_aux(cve):
         if edb in cve_map[cve]:
             found = True
             print "Exploit DB Id: " + edb
-            print "File: /usr/share/exploitdb/" + file
+            print "File: " + pdir + "/exploit-database/" + file
             print "Date: " + date
             print "Author: " + author
             print "Platform: " + platform
@@ -129,7 +142,7 @@ def search_from_nessus(file):
     reader.next() #skip header
     
     for row in reader:
-        cve = tuple(row)[1]
+        cve = tuple(row)[1].upper()
         proto = tuple(row)[5]
         port = tuple(row)[6]
         name = tuple(row)[7]
@@ -154,7 +167,7 @@ def search_from_nessus(file):
 
 def search_cve(cve):
     cve = cve.upper()
-
+    print len(cve_map)
     if not cve in cve_map:
         print "ERROR - CVE not found."
         print
@@ -183,14 +196,20 @@ def usage():
     print
     sys.exit(1)
 
-if __name__ == "__main__":
+def main():
+    global cve_map
+    
+    if not os.path.isdir(pdir + "/exploit-database"):
+        print "Cloning exploit-database repository"
+        os.system("cd %s; git clone https://github.com/offensive-security/exploit-database" % pdir)
+    
     if len(sys.argv) < 2:
         usage()
     if sys.argv[1] == "-u":
         update_db()
         sys.exit(0)
     else:
-        with open("exploitdb_mapping_cve.json") as data_file:
+        with open(pdir + "/exploitdb_mapping_cve.json") as data_file:
             cve_map = json.load(data_file)
 
     if sys.argv[1] == "-f":
