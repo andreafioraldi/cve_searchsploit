@@ -8,6 +8,7 @@ python setup.py install
 #### Requirements
 + python2
 + requests
++ progressbar2
 + git
 
 ### Usage
