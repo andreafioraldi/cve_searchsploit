@@ -3,7 +3,7 @@ Search an exploit in the local exploitdb database by its CVE
 
 ### Install
 ```
-python setup.py install
+$ python setup.py install
 ```
 #### Requirements
 + python2
@@ -13,7 +13,7 @@ python setup.py install
 
 ### Usage
 ```
-python cve_searchsploit.py [parameters...]
+$ cve_searchsploit [parameters...]
 ```
 
 #### Parameters
