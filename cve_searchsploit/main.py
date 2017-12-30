@@ -167,7 +167,7 @@ def search_from_nessus(file):
 
 def search_cve(cve):
     cve = cve.upper()
-    print len(cve_map)
+    
     if not cve in cve_map:
         print "ERROR - CVE not found."
         print
