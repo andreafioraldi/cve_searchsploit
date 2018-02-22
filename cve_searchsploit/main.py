@@ -29,7 +29,7 @@ def update_db():
             data = json.load(data_file)
 
     print "Refreshing exploit-database repo with lastest exploits"
-    os.system("cd %s/exploit-database/; git pull" % pdir)
+    os.system("cd %s/exploit-database/; git pull origin master" % pdir)
     
     files = open(pdir + "/exploit-database/files_exploits.csv")
     reader = csv.reader(files)
