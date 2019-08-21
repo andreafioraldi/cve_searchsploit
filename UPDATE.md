@@ -1,4 +1,4 @@
-## How to update mapping
+## How to update mappings
 
 ```
 git clone --recursive https://github.com/andreafioraldi/cve_searchsploit

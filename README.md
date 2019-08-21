@@ -1,19 +1,35 @@
 # cve_searchsploit
+
+> version 1.1
+
 Search an exploit in the local exploitdb database by its CVE.
 
-Here you can get a free cve and exploit-db mapping in json format.
+Here you can get a free cve to exploit-db mapping in json format.
 
-### Install
+## Install
+
+#### from PyPI
+
 ```
-$ python setup.py install
+$ pip3 install cve_searchsploit
 ```
+
+#### from GitHub
+
+```
+$ git clone https://github.com/andreafioraldi/cve_searchsploit
+$ cd cve_searchsploit
+$ python3 setup.py install
+```
+
 #### Requirements
-+ python2
+
++ python3
 + requests
 + progressbar2
 + git
 
-### Usage
+## Usage
 ```
 $ cve_searchsploit [parameters...]
 ```

@@ -1,3 +1,4 @@
-import main
+#!/usr/bin/env python3
 
-main.main()
+from . import main
+main()
