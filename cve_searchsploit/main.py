@@ -14,6 +14,9 @@ import random
 import sys
 import progressbar
 
+if sys.version_info[0] < 3:
+    range = xrange
+
 pdir = os.path.dirname(os.path.abspath(__file__))
 
 cve_map = {}
@@ -33,7 +36,8 @@ def update_db():
     
     files = open(pdir + "/exploit-database/files_exploits.csv")
     reader = csv.reader(files)
-    reader.next() #skip header
+    #reader.next() #skip header
+    next(reader)
 
     reader = list(reader)
     csv_len = len(reader)
@@ -52,7 +56,7 @@ def update_db():
 
     print ("Refreshing EDBID-CVE mapping")
     with progressbar.ProgressBar(max_value=csv_len) as bar:
-        for i in xrange(csv_len):
+        for i in range(csv_len):
             edb = tuple(reader[i])[0]
             if edb in data:
                 #print "Skipping edb id " + edb
@@ -90,7 +94,7 @@ def update_db():
         json.dump(data, data_file, indent=2)
 
     cve_data = {}
-    for k, v in data.iteritems():
+    for k, v in data.items():
         for e in v:
             cve_data[e] = cve_data.get(e, [])
             cve_data[e].append(k)
@@ -103,7 +107,8 @@ def update_db():
 def _search_cve_aux(cve):
     files = open(pdir + "/exploit-database/files_exploits.csv")
     reader = csv.reader(files)
-    reader.next() #skip header
+    #reader.next() #skip header
+    next(reader)
     
     found = False
     for row in reader:
@@ -132,20 +137,24 @@ def search_from_file(file):
         if len(line) == 0:
             continue
         
-        print (" +----+ " + line + " +----+ ")
         cve = line.upper()
+        sname = "| " + cve + " |"
+        print ("+" + "-" * (len(sname)-2) + "+")
+        print (sname)
+        print ("+" + "-" * (len(sname)-2) + "+")
+        print ("")
 
         if not cve in cve_map:
             print ("ERROR - CVE not found.")
             print ("")
             continue
 
-        _search_cve_aux(line)
-        print ("")
+        _search_cve_aux(cve)
 
 def search_from_nessus(file):
     reader = csv.reader(file)
-    reader.next() #skip header
+    #reader.next() #skip header
+    next(reader)
     
     for row in reader:
         cve = tuple(row)[1].upper()
@@ -173,6 +182,12 @@ def search_from_nessus(file):
 
 def search_cve(cve):
     cve = cve.upper()
+    
+    sname = "| " + cve + " |"
+    print ("+" + "-" * (len(sname)-2) + "+")
+    print (sname)
+    print ("+" + "-" * (len(sname)-2) + "+")
+    print ("")
     
     if not cve in cve_map:
         print ("ERROR - CVE not found.")
@@ -218,28 +233,34 @@ def main():
         with open(pdir + "/exploitdb_mapping_cve.json") as data_file:
             cve_map = json.load(data_file)
 
-    if sys.argv[1] == "-f":
-        if len(sys.argv) < 3:
-            usage()
-        try:
-            file = open(sys.argv[2], "r")
-            search_from_file(file)
-        except Exception as exc:
-            print ("ERROR - " + str(exc))
+    for i in range(1, len(sys.argv)):
+        a = sys.argv[i]
+        if a == "-u":
+            print ("ERROR - '-u' is mutually exclusive with all the other arguments")
             print ("")
             exit(1)
-    elif sys.argv[1] == "-n":
-        if len(sys.argv) < 3:
-            usage()
-        try:
-            file = open(sys.argv[2], "r")
-            search_from_nessus(file)
-        except Exception as exc:
-            print ("ERROR - " + str(exc))
-            print ("")
-            exit(1)
-    else:
-        search_cve(sys.argv[1])
+        elif a == "-f":
+            if i +1 == len(sys.argv):
+                usage()
+            try:
+                file = open(sys.argv[i+1], "r")
+                search_from_file(file)
+            except Exception as exc:
+                print ("ERROR - " + str(exc))
+                print ("")
+                exit(1)
+        elif a == "-n":
+            if i +1 == len(sys.argv):
+                usage()
+            try:
+                file = open(sys.argv[i+1], "r")
+                search_from_nessus(file)
+            except Exception as exc:
+                print ("ERROR - " + str(exc))
+                print ("")
+                exit(1)
+        else:
+            search_cve(a)
 
 if __name__ == "__main__":
     main()
