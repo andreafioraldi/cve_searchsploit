@@ -67,7 +67,7 @@ def update_db():
                 while True:
                     try:
                         r = requests.get("https://www.exploit-db.com/exploits/" + edb, headers=get_header)
-                        content = r.content
+                        content = r.text
                     except Exception:
                         time.sleep(10)
                         continue
@@ -76,14 +76,14 @@ def update_db():
                 used = []
                 indexes = locations_of_substring(content, 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-')
                 for pos in indexes:
-                      cve = r.content[pos + len('https://cve.mitre.org/cgi-bin/cvename.cgi?name='): pos + len('https://cve.mitre.org/cgi-bin/cvename.cgi?name=') + 13].upper()
+                      cve = r.text[pos + len('https://cve.mitre.org/cgi-bin/cvename.cgi?name='): pos + len('https://cve.mitre.org/cgi-bin/cvename.cgi?name=') + 13].upper()
                       if cve in used: continue
                       used.append(cve)
                       print ("Found: edbid " + edb + " <---> " + cve)
                 data[edb] = used
                 indexes = locations_of_substring(content, 'https://nvd.nist.gov/vuln/detail/CVE-')
                 for pos in indexes:
-                      cve = r.content[pos + len('https://nvd.nist.gov/vuln/detail/'): pos + len('https://nvd.nist.gov/vuln/detail/') + 13].upper()
+                      cve = r.text[pos + len('https://nvd.nist.gov/vuln/detail/'): pos + len('https://nvd.nist.gov/vuln/detail/') + 13].upper()
                       if cve in used: continue
                       used.append(cve)
                       print ("Found: edbid " + edb + " <---> " + cve)
