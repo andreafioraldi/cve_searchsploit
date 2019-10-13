@@ -1,6 +1,6 @@
 # cve_searchsploit
 
-> version 1.3
+> version 1.4
 
 Search an exploit in the local exploitdb database by its CVE.
 
@@ -40,3 +40,21 @@ $ cve_searchsploit [parameters...]
 +  ```-f <file with cve list>```    search exploits by a cve list file
 +  ```-n <nessus csv scan file>```  search exploits by the cve matching with a nessus scan in csv format
 
+### As a library
+
+```python
+>>> import cve_searchsploit as CS
+>>> 
+>>> CS.update_db()
+Refreshing exploit-database repo with lastest exploits
+From https://github.com/offensive-security/exploit-database
+ * branch                master     -> FETCH_HEAD
+Already up to date.
+Refreshing EDBID-CVE mapping
+100% (41823 of 41823) |##############| Elapsed Time: 0:00:00 Time:  0:00:00
+>>> 
+>>> CS.edbid_from_cve("CVE-2019-0708")
+[46946, 47120, 47416]
+>>> CS.cve_from_edbid(47120)
+['CVE-2019-0708']
+```

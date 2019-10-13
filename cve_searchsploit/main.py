@@ -21,6 +21,41 @@ pdir = os.path.dirname(os.path.abspath(__file__))
 
 cve_map = {}
 
+########## Library functions
+
+def iter_edbid_from_cve(cve):
+    cve = cve.upper()
+    if cve not in cve_map:
+        return
+
+    files = open(pdir + "/exploit-database/files_exploits.csv")
+    reader = csv.reader(files)
+    #reader.next() #skip header
+    next(reader)
+    
+    for row in reader:
+        edb, file, description, date, author, platform, type, port = tuple(row)
+        if edb in cve_map[cve]:
+            yield int(edb)
+
+    files.close()
+    return
+
+def edbid_from_cve(cve):
+    return list(iter_edbid_from_cve(cve))
+
+def iter_cve_from_edbid(edb):
+    edb = str(int(edb))
+
+    for cve in cve_map:
+        if edb in cve_map[cve]:
+            yield cve.upper()
+
+def cve_from_edbid(edb):
+    return list(iter_cve_from_edbid(edb))
+
+##########
+
 def update_db():
     data = {}
 
@@ -101,7 +136,6 @@ def update_db():
 
     with open(pdir + "/exploitdb_mapping_cve.json", "w") as data_file:
         json.dump(cve_data, data_file, indent=2)
-
 
 
 def _search_cve_aux(cve):
@@ -220,19 +254,12 @@ def usage():
 def main():
     global cve_map
     
-    if not os.path.isdir(pdir + "/exploit-database"):
-        print ("Cloning exploit-database repository")
-        os.system("cd %s; git clone https://github.com/offensive-security/exploit-database" % pdir)
-    
     if len(sys.argv) < 2:
         usage()
     if sys.argv[1] == "-u":
         update_db()
         exit(0)
-    else:
-        with open(pdir + "/exploitdb_mapping_cve.json") as data_file:
-            cve_map = json.load(data_file)
-
+    
     for i in range(1, len(sys.argv)):
         a = sys.argv[i]
         if a == "-u":
@@ -261,6 +288,14 @@ def main():
                 exit(1)
         else:
             search_cve(a)
+
+
+if not os.path.isdir(pdir + "/exploit-database"):
+    print ("Cloning exploit-database repository")
+    os.system("cd %s; git clone https://github.com/offensive-security/exploit-database" % pdir)
+
+with open(pdir + "/exploitdb_mapping_cve.json") as data_file:
+    cve_map = json.load(data_file)
 
 if __name__ == "__main__":
     main()
