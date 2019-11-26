@@ -9,7 +9,7 @@ from setuptools import setup
 
 setup(
     name='cve_searchsploit',
-    version="1.4",
+    version="1.5",
     license=__license__,
     description='Search an exploit in the local exploitdb database by its CVE',
     author=__author__,

@@ -1,3 +1,0 @@
-[submodule "cve_searchsploit/exploit-database"]
-	path = cve_searchsploit/exploit-database
-	url = https://github.com/offensive-security/exploit-database.git
