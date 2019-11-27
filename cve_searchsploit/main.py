@@ -111,7 +111,10 @@ def update_db():
                 used = []
                 indexes = locations_of_substring(content, 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-')
                 for pos in indexes:
-                      cve = r.text[pos + len('https://cve.mitre.org/cgi-bin/cvename.cgi?name='): pos + len('https://cve.mitre.org/cgi-bin/cvename.cgi?name=') + 13].upper()
+                      cve = r.text[pos + len('https://cve.mitre.org/cgi-bin/cvename.cgi?name='): pos + len('https://cve.mitre.org/cgi-bin/cvename.cgi?name=') + 9].upper()
+                      while pos < len(r.text) and r.text[pos].isdigit():
+                          cve += r.text[pos]
+                          pos += 1
                       if cve in used: continue
                       used.append(cve)
                       print ("Found: edbid " + edb + " <---> " + cve)
