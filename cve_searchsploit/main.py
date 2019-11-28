@@ -112,6 +112,7 @@ def update_db():
                 indexes = locations_of_substring(content, 'https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-')
                 for pos in indexes:
                       cve = r.text[pos + len('https://cve.mitre.org/cgi-bin/cvename.cgi?name='): pos + len('https://cve.mitre.org/cgi-bin/cvename.cgi?name=') + 9].upper()
+                      pos += len('https://cve.mitre.org/cgi-bin/cvename.cgi?name=') + 9
                       while pos < len(r.text) and r.text[pos].isdigit():
                           cve += r.text[pos]
                           pos += 1
@@ -121,8 +122,11 @@ def update_db():
                 data[edb] = used
                 indexes = locations_of_substring(content, 'https://nvd.nist.gov/vuln/detail/CVE-')
                 for pos in indexes:
-                      cve = r.text[pos + len('https://nvd.nist.gov/vuln/detail/'): pos + len('https://nvd.nist.gov/vuln/detail/') + 13].upper()
-                      if cve in used: continue
+                      cve = r.text[pos + len('https://nvd.nist.gov/vuln/detail/'): pos + len('https://nvd.nist.gov/vuln/detail/') + 9].upper()
+                      pos += len('https://nvd.nist.gov/vuln/detail/') + 9
+                      while pos < len(r.text) and r.text[pos].isdigit():
+                          cve += r.text[pos]
+                          pos += 1
                       used.append(cve)
                       print ("Found: edbid " + edb + " <---> " + cve)
                 time.sleep(random.uniform(0.1, 0.3))
