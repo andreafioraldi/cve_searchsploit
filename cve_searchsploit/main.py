@@ -116,10 +116,10 @@ def update_db():
                       while pos < len(r.text) and r.text[pos].isdigit():
                           cve += r.text[pos]
                           pos += 1
+                      cve = cve.replace("\u2013", "-")
                       if cve in used: continue
                       used.append(cve)
                       print ("Found: edbid " + edb + " <---> " + cve)
-                data[edb] = used
                 indexes = locations_of_substring(content, 'https://nvd.nist.gov/vuln/detail/CVE-')
                 for pos in indexes:
                       cve = r.text[pos + len('https://nvd.nist.gov/vuln/detail/'): pos + len('https://nvd.nist.gov/vuln/detail/') + 9].upper()
@@ -127,8 +127,11 @@ def update_db():
                       while pos < len(r.text) and r.text[pos].isdigit():
                           cve += r.text[pos]
                           pos += 1
+                      cve = cve.replace("\u2013", "-")
+                      if cve in used: continue
                       used.append(cve)
                       print ("Found: edbid " + edb + " <---> " + cve)
+                data[edb] = used
                 time.sleep(random.uniform(0.1, 0.3))
             bar.update(i)
 
