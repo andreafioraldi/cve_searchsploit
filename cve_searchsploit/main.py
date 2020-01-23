@@ -8,10 +8,11 @@ __email__ = "andreafioraldi@gmail.com"
 import os
 import json
 import csv
-import requests
 import time
 import random
 import sys
+
+import requests
 import progressbar
 
 if sys.version_info[0] < 3:
@@ -28,17 +29,16 @@ def iter_edbid_from_cve(cve):
     if cve not in cve_map:
         return
 
-    files = open(pdir + "/exploit-database/files_exploits.csv")
-    reader = csv.reader(files)
-    #reader.next() #skip header
-    next(reader)
-    
-    for row in reader:
-        edb, file, description, date, author, platform, type, port = tuple(row)
-        if edb in cve_map[cve]:
-            yield int(edb)
+    with open(pdir + "/exploit-database/files_exploits.csv") as files:
+        reader = csv.reader(files)
+        #reader.next() #skip header
+        next(reader)
 
-    files.close()
+        for row in reader:
+            edb, file, description, date, author, platform, type, port = tuple(row)
+            if edb in cve_map[cve]:
+                yield int(edb)
+
     return
 
 def edbid_from_cve(cve):
@@ -66,9 +66,9 @@ def update_db():
         with open(pdir + "/exploitdb_mapping.json") as data_file:
             data = json.load(data_file)
 
-    print ("Refreshing exploit-database repo with lastest exploits")
+    print ("Refreshing exploit-database repo with latest exploits")
     os.system("cd %s/exploit-database/; git pull origin master" % pdir)
-    
+
     files = open(pdir + "/exploit-database/files_exploits.csv")
     reader = csv.reader(files)
     #reader.next() #skip header
@@ -76,11 +76,11 @@ def update_db():
 
     reader = list(reader)
     csv_len = len(reader)
-    
+
     get_header = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
 
     def locations_of_substring(string, substring):
-        substring_length = len(substring)    
+        substring_length = len(substring)
         def recurse(locations_found, start):
             location = string.find(substring, start)
             if location != -1:
@@ -153,7 +153,7 @@ def _search_cve_aux(cve):
     reader = csv.reader(files)
     #reader.next() #skip header
     next(reader)
-    
+
     found = False
     for row in reader:
         edb, file, description, date, author, platform, type, port = tuple(row)
@@ -178,9 +178,9 @@ def _search_cve_aux(cve):
 def search_from_file(file):
     for line in file:
         line = line.strip()
-        if len(line) == 0:
+        if not line:
             continue
-        
+
         cve = line.upper()
         sname = "| " + cve + " |"
         print ("+" + "-" * (len(sname)-2) + "+")
@@ -199,13 +199,13 @@ def search_from_nessus(file):
     reader = csv.reader(file)
     #reader.next() #skip header
     next(reader)
-    
+
     for row in reader:
         cve = tuple(row)[1].upper()
         proto = tuple(row)[5]
         port = tuple(row)[6]
         name = tuple(row)[7]
-        
+
         if not cve in cve_map:
             continue
 
@@ -220,29 +220,28 @@ def search_from_nessus(file):
         print ("")
         print (" +----+ Exploit DB matching +----+ ")
         print ("")
-        
+
         _search_cve_aux(cve)
         print ("")
 
 def search_cve(cve):
     cve = cve.upper()
-    
+
     sname = "| " + cve + " |"
     print ("+" + "-" * (len(sname)-2) + "+")
     print (sname)
     print ("+" + "-" * (len(sname)-2) + "+")
     print ("")
-    
+
     if not cve in cve_map:
         print ("ERROR - CVE not found.")
         print ("")
-        exit(1)
-    
+        sys.exit(1)
+
     found = _search_cve_aux(cve)
     if not found:
-        exit(1)
-    
-    print
+        sys.exit(1)
+
 
 def usage():
     print ("+------------------------------------+")
@@ -259,23 +258,23 @@ def usage():
     print ("  -f <file with cve list>    search exploits by a cve list file")
     print ("  -n <nessus csv scan file>  search exploits by the cve matching with a nessus scan in csv format")
     print ("")
-    exit(1)
+    sys.exit(1)
 
 def main():
     global cve_map
-    
+
     if len(sys.argv) < 2:
         usage()
     if sys.argv[1] == "-u":
         update_db()
-        exit(0)
-    
+        sys.exit(0)
+
     for i in range(1, len(sys.argv)):
         a = sys.argv[i]
         if a == "-u":
             print ("ERROR - '-u' is mutually exclusive with all the other arguments")
             print ("")
-            exit(1)
+            sys.exit(1)
         elif a == "-f":
             if i +1 == len(sys.argv):
                 usage()
@@ -285,7 +284,7 @@ def main():
             except Exception as exc:
                 print ("ERROR - " + str(exc))
                 print ("")
-                exit(1)
+                sys.exit(1)
         elif a == "-n":
             if i +1 == len(sys.argv):
                 usage()
@@ -295,7 +294,7 @@ def main():
             except Exception as exc:
                 print ("ERROR - " + str(exc))
                 print ("")
-                exit(1)
+                sys.exit(1)
         else:
             search_cve(a)
 
