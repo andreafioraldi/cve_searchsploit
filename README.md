@@ -70,5 +70,6 @@ If you use this tool in your academic work you can cite it using
   month        = jun,
   title        = {{CVE SearchSploit}},
   year         = {2017},
+  url          = {https://github.com/andreafioraldi/cve_searchsploit},
 }
 ```
