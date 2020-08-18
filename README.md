@@ -1,4 +1,4 @@
-# cve_searchsploit
+# CVE SearchSploit
 
 > version 1.6
 
@@ -57,4 +57,18 @@ Refreshing EDBID-CVE mapping
 [46946, 47120, 47416]
 >>> CS.cve_from_edbid(47120)
 ['CVE-2019-0708']
+```
+
+## Cite
+
+If you use this tool in your academic work you can cite it using
+
+```bibtex
+@Misc{cve_searchsploit,
+  author       = {Andrea Fioraldi},
+  howpublished = {GitHub},
+  month        = jun,
+  title        = {{CVE SearchSploit}},
+  year         = {2017},
+}
 ```
