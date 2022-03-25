@@ -11,6 +11,7 @@ import csv
 import time
 import random
 import sys
+import io
 
 import requests
 import progressbar
@@ -69,8 +70,8 @@ def update_db():
     file_exploits_content = ""
     try:
         file_exploits_content = requests.get("https://raw.githubusercontent.com/offensive-security/exploitdb/master/files_exploits.csv").text
-        with open(pdir + "/files_exploits.csv","w") as f:
-            f.write(file_exploits_content)
+        f = io.open(pdir + "/files_exploits.csv", 'w', encoding='utf8')
+        f.write(file_exploits_content)
     except:
         print("Unable to pull exploit-database exploits list")
 
@@ -309,8 +310,8 @@ def main():
 
 if not os.path.isdir(pdir + "/exploit-database"):
     file_exploits_content = requests.get("https://raw.githubusercontent.com/offensive-security/exploitdb/master/files_exploits.csv").text
-    with open(pdir + "/files_exploits.csv","w") as f:
-        f.write(file_exploits_content)
+    f = io.open(pdir + "/files_exploits.csv", 'w', encoding='utf8')
+    f.write(file_exploits_content)
 
 with open(pdir + "/exploitdb_mapping_cve.json") as data_file:
     cve_map = json.load(data_file)
