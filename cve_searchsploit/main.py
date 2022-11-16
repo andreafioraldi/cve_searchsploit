@@ -36,7 +36,7 @@ def iter_edbid_from_cve(cve):
         next(reader)
 
         for row in reader:
-            edb, file, description, date, author, platform, type, port = tuple(row)
+            edb = tuple(row)[0]
             if edb in cve_map[cve]:
                 yield int(edb)
 
@@ -182,12 +182,13 @@ def update_db():
 def _search_cve_aux(cve):
     files = open(pdir + "/exploitdb/files_exploits.csv")
     reader = csv.reader(files)
-    # reader.next() #skip header
+    # skip header
+    # ['id', 'file', 'description', 'date_published', 'author', 'type', 'platform', 'port', 'date_added', 'date_updated', 'verified', 'codes', 'tags', 'aliases', 'screenshot_url', 'application_url', 'source_url']
     next(reader)
 
     found = False
     for row in reader:
-        edb, file, description, date, author, platform, type, port = tuple(row)
+        edb, file, description, date, author, type, platform, port, date_added, date_updated, verified, codes, tags, aliases, screenshot_url, application_url, source_url = tuple(row)
         if edb in cve_map[cve]:
             found = True
             print(" Exploit DB Id: " + edb)
