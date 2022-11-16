@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 __author__ = "Andrea Fioraldi"
-__copyright__ = "Copyright 2017-19, Andrea Fioraldi"
+__copyright__ = "Copyright 2017-22, Andrea Fioraldi"
 __license__ = "MIT"
 __email__ = "andreafioraldi@gmail.com"
 
@@ -280,7 +280,7 @@ def search_cve(cve):
 def usage():
     print("+------------------------------------+")
     print("|          cve_searchsploit          |")
-    print("| Copyright 2017-19, Andrea Fioraldi |")
+    print("| Copyright 2017-22, Andrea Fioraldi |")
     print("+------------------------------------+")
     print("")
     print("Usage:")

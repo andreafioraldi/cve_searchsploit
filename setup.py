@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 __author__ = "Andrea Fioraldi"
-__copyright__ = "Copyright 2017, Andrea Fioraldi"
+__copyright__ = "Copyright 2017-22, Andrea Fioraldi"
 __license__ = "MIT"
 __email__ = "andreafioraldi@gmail.com"
 
