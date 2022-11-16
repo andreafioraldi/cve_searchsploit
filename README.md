@@ -1,6 +1,6 @@
 # CVE SearchSploit
 
-> version 1.6
+> version 1.7
 
 Search an exploit in the local exploitdb database by its CVE.
 

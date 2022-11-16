@@ -142,7 +142,7 @@ def update_db():
                     if cve in used:
                         continue
                     used.append(cve)
-                    print("Found: edbid " + edb + " <---> " + cve)
+                    print("\nFound: edbid " + edb + " <---> " + cve)
                 indexes = locations_of_substring(
                     content, "https://nvd.nist.gov/vuln/detail/CVE-"
                 )
@@ -161,7 +161,7 @@ def update_db():
                     if cve in used:
                         continue
                     used.append(cve)
-                    print("Found: edbid " + edb + " <---> " + cve)
+                    print("\nFound: edbid " + edb + " <---> " + cve)
                 data[edb] = used
                 time.sleep(random.uniform(0.1, 0.3))
             bar.update(i)
